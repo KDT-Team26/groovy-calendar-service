@@ -1,0 +1,45 @@
+// study/calendar/content-service에 복붙되어 있던 서비스 간 동기 HTTP 클라이언트
+// (UserServiceClient/StudyServiceClient/TagPreferenceClient)가 공통으로 쓸 CircuitBreaker+Retry
+// 실행기(ResilientCallExecutor)를 모은다. 100% 동일했던 UserServiceClient(study/content-service)는
+// 아예 이 모듈로 옮겼다. StudyServiceClient/TagPreferenceClient는 서비스마다 쓰는 메서드가 달라
+// 그대로 로컬에 두고, 실행기만 여기서 가져다 쓴다.
+plugins {
+	id 'java-library'
+	id 'io.spring.dependency-management'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.boot:spring-boot-dependencies:4.1.0"
+	}
+}
+
+dependencies {
+	compileOnly 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.springframework.boot:spring-boot-autoconfigure'
+
+	implementation project(':libs:web-common')
+
+	api 'io.github.resilience4j:resilience4j-circuitbreaker:2.4.0'
+	api 'io.github.resilience4j:resilience4j-retry:2.4.0'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation platform('org.junit:junit-bom:5.11.4')
+	testImplementation 'org.junit.jupiter:junit-jupiter'
+	testImplementation 'org.assertj:assertj-core'
+	testImplementation 'com.fasterxml.jackson.core:jackson-databind'
+	testImplementation 'org.springframework.boot:spring-boot-starter-web'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

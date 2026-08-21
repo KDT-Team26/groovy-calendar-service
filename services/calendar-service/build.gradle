@@ -1,0 +1,71 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.1.0'
+	id 'io.spring.dependency-management'
+}
+
+// MSA 전환(calendar-service 추출): groovy(레거시)의 Calendar 도메인이 실제로 이 서비스로
+// 옮겨왔다 — study-service/identity-service와 동일한 의존성 구성(자기 스키마 Flyway, JWKS
+// 검증, Kafka Outbox 발행, 분산 트레이싱, Resilience4j).
+ext {
+	jjwtVersion = '0.12.6'
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+	// Phase 7(DB per Service) 패턴 재사용: calendar_db를 이 서비스가 직접 소유하므로 자기
+	// 스키마 마이그레이션을 직접 관리한다.
+	implementation 'org.springframework.boot:spring-boot-flyway'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-mysql'
+
+	implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+	runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+	runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	// MSA 전환: Calendar가 발행하는 일정 변경 알림도 groovy(레거시)와 동일한 Transactional
+	// Outbox + Kafka 패턴을 쓴다(OutboxRelay 참고).
+	implementation 'org.springframework.boot:spring-boot-starter-kafka'
+
+	// SchedulingConfig가 직접 등록하는 구 Jackson(com.fasterxml.jackson) ObjectMapper가
+	// EventEnvelope의 Instant occurredAt을 직렬화하려면 필요하다.
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+
+	// identity-service(JWKS 검증)/study-service(멤버십·수신자 조회) 호출에 Retry+CircuitBreaker를
+	// 건다(study-service/identity-service build.gradle과 동일한 이유).
+	implementation 'io.github.resilience4j:resilience4j-circuitbreaker:2.4.0'
+	implementation 'io.github.resilience4j:resilience4j-retry:2.4.0'
+
+	// MSA 전환 Phase 12 패턴 재사용: 분산 트레이싱(TracingConfig 참고).
+	implementation 'org.springframework.boot:spring-boot-micrometer-tracing'
+	implementation 'org.springframework.boot:spring-boot-opentelemetry'
+	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+	implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+
+	implementation project(':libs:event-contract')
+	implementation project(':libs:observability')
+	implementation project(':libs:web-common')
+	implementation project(':libs:security-common')
+	implementation project(':libs:client-common')
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

@@ -1,0 +1,61 @@
+// study/calendar/content/notification-service(= identity-service가 발급한 JWT를 공개키로
+// "검증만" 하는 4개 서비스)에 복붙되어 있던 JwtAuthenticationFilter/JwksKeyLocator/TokenProvider를
+// 한 곳으로 모은다. identity-service는 발급자라 구현이 근본적으로 다르다(개인키로 서명, email
+// 기반 principal) — 그래서 identity-service는 이 모듈을 쓰지 않고 자기 로컬 TokenProvider/
+// JwtAuthenticationFilter를 그대로 유지한다.
+plugins {
+	id 'java-library'
+	id 'io.spring.dependency-management'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+ext {
+	jjwtVersion = '0.12.6'
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.boot:spring-boot-dependencies:4.1.0"
+	}
+}
+
+dependencies {
+	compileOnly 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.springframework.boot:spring-boot-starter-security'
+	compileOnly 'org.springframework.boot:spring-boot-autoconfigure'
+
+	// JwksKeyLocator/TokenProvider의 공개 시그니처(Locator<Key>, Claims 등)에 jjwt-api 타입이
+	// 노출되므로 api로 선언해 이 모듈에 의존하는 서비스가 컴파일 타임에도 볼 수 있게 한다.
+	// 실제 구현체(jjwt-impl/jjwt-jackson)는 런타임에만 필요해서 runtimeOnly로 충분하고,
+	// java-library 플러그인 특성상 이 모듈의 runtimeOnly 의존성도 소비하는 서비스의 런타임
+	// 클래스패스로 전이된다.
+	api "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+	runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+	runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+
+	api 'io.github.resilience4j:resilience4j-circuitbreaker:2.4.0'
+	api 'io.github.resilience4j:resilience4j-retry:2.4.0'
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation platform('org.junit:junit-bom:5.11.4')
+	testImplementation 'org.junit.jupiter:junit-jupiter'
+	testImplementation 'org.assertj:assertj-core'
+	testImplementation "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+	testImplementation "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
+	testImplementation 'com.fasterxml.jackson.core:jackson-databind'
+	// JwksKeyLocator가 런타임에 RestClient/JdkClientHttpRequestFactory를 쓴다 — compileOnly라
+	// 테스트 실행 시점엔 별도로 필요하다.
+	testImplementation 'org.springframework.boot:spring-boot-starter-web'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

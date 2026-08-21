@@ -1,0 +1,9 @@
+rootProject.name = 'groovy-calendar-service'
+
+include 'libs:event-contract'
+include 'libs:observability'
+include 'libs:web-common'
+include 'libs:security-common'
+include 'libs:client-common'
+
+include 'services:calendar-service'
