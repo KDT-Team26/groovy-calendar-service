@@ -3,6 +3,7 @@ package com.groovy.backend.client;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestClient;
 
 /**
  * UserServiceClient는 com.groovy.backend.client 패키지에 있어 각 서비스의 기본 컴포넌트 스캔
@@ -16,10 +17,11 @@ public class ClientCommonAutoConfiguration {
 
 	@Bean
 	public UserServiceClient userServiceClient(
+		RestClient.Builder restClientBuilder,
 		@Value("${identity-service.url:http://identity-service:8081}") String identityServiceUrl,
 		@Value("${identity-service.connect-timeout-ms:2000}") long connectTimeoutMs,
 		@Value("${identity-service.read-timeout-ms:3000}") long readTimeoutMs
 	) {
-		return new UserServiceClient(identityServiceUrl, connectTimeoutMs, readTimeoutMs);
+		return new UserServiceClient(restClientBuilder, identityServiceUrl, connectTimeoutMs, readTimeoutMs);
 	}
 }

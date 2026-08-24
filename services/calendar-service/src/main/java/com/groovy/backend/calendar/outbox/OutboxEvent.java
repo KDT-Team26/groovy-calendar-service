@@ -39,6 +39,12 @@ public class OutboxEvent extends BaseTimeEntity {
 	@Column(nullable = false, columnDefinition = "TEXT")
 	private String payload;
 
+	// IR-312: 접수 시점(원래 HTTP 요청 스레드, 도메인 쓰기와 같은 트랜잭션)의 W3C traceparent.
+	// OutboxRelay가 이 값을 그대로 Kafka record header로 옮겨야 배치 발행 이후에도 원래 요청까지
+	// trace가 이어진다 — 이게 없으면 릴레이 스레드가 매번 새 trace를 시작해버린다.
+	@Column(name = "trace_parent", length = 55)
+	private String traceParent;
+
 	@Column(nullable = false)
 	private boolean published;
 
@@ -46,10 +52,11 @@ public class OutboxEvent extends BaseTimeEntity {
 	private LocalDateTime publishedAt;
 
 	@Builder
-	public OutboxEvent(String eventId, String eventType, String payload) {
+	public OutboxEvent(String eventId, String eventType, String payload, String traceParent) {
 		this.eventId = eventId;
 		this.eventType = eventType;
 		this.payload = payload;
+		this.traceParent = traceParent;
 		this.published = false;
 	}
 
