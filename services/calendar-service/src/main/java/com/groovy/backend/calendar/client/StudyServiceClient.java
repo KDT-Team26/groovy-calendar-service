@@ -43,6 +43,7 @@ public class StudyServiceClient {
 	private final ResilientCallExecutor executor;
 
 	public StudyServiceClient(
+		RestClient.Builder restClientBuilder,
 		@Value("${study-service.url:http://study-service:8082}") String studyServiceUrl,
 		@Value("${study-service.connect-timeout-ms:2000}") long connectTimeoutMs,
 		@Value("${study-service.read-timeout-ms:3000}") long readTimeoutMs
@@ -53,7 +54,7 @@ public class StudyServiceClient {
 		JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
 		requestFactory.setReadTimeout(Duration.ofMillis(readTimeoutMs));
 
-		this.restClient = RestClient.builder()
+		this.restClient = restClientBuilder
 			.baseUrl(studyServiceUrl)
 			.requestFactory(requestFactory)
 			.build();

@@ -24,14 +24,14 @@ public class UserServiceClient {
 	private final RestClient restClient;
 	private final ResilientCallExecutor executor;
 
-	public UserServiceClient(String identityServiceUrl, long connectTimeoutMs, long readTimeoutMs) {
+	public UserServiceClient(RestClient.Builder restClientBuilder, String identityServiceUrl, long connectTimeoutMs, long readTimeoutMs) {
 		var httpClient = java.net.http.HttpClient.newBuilder()
 			.connectTimeout(Duration.ofMillis(connectTimeoutMs))
 			.build();
 		JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
 		requestFactory.setReadTimeout(Duration.ofMillis(readTimeoutMs));
 
-		this.restClient = RestClient.builder()
+		this.restClient = restClientBuilder
 			.baseUrl(identityServiceUrl)
 			.requestFactory(requestFactory)
 			.build();
