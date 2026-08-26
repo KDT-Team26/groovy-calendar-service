@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.web.client.RestClient;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpServer;
 
@@ -42,7 +44,7 @@ class UserServiceClientContractTest {
 		));
 		int port = startStubServer(responseJson);
 
-		UserServiceClient client = new UserServiceClient("http://localhost:" + port, 2000, 3000);
+		UserServiceClient client = new UserServiceClient(RestClient.builder(), "http://localhost:" + port, 2000, 3000);
 
 		Map<Long, String> names = client.findNamesByIds(List.of(1L, 2L));
 
@@ -51,7 +53,7 @@ class UserServiceClientContractTest {
 
 	@Test
 	void identity_service가_죽어있으면_예외_대신_빈_맵을_반환한다() {
-		UserServiceClient client = new UserServiceClient("http://localhost:1", 200, 200);
+		UserServiceClient client = new UserServiceClient(RestClient.builder(), "http://localhost:1", 200, 200);
 
 		Map<Long, String> names = client.findNamesByIds(List.of(1L));
 
