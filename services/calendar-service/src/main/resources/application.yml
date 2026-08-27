@@ -19,10 +19,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
   # MSA 전환: 이 서비스도 일정 변경 알림을 Outbox+Kafka로 발행한다(notification-service가
   # 소비하는 "notification-events" 토픽에 함께 발행).
   kafka:
