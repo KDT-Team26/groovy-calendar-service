@@ -1,9 +1,6 @@
 rootProject.name = 'groovy-calendar-service'
 
-include 'libs:event-contract'
-include 'libs:observability'
-include 'libs:web-common'
-include 'libs:security-common'
-include 'libs:client-common'
+// 공통 코드는 groovy-common 레포로 분리되어 GitHub Packages 로 배포된다.
+// (com.groovy.backend:{event-contract,observability,web-common,security-common,client-common,outbox})
 
 include 'services:calendar-service'

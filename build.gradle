@@ -12,5 +12,15 @@ allprojects {
 
 	repositories {
 		mavenCentral()
+		// 공통 모듈(groovy-common) — GitHub Packages. public 레포여도 Maven 은 인증이 필요하다.
+		//  - CI: env GITHUB_ACTOR + GPR_TOKEN(조직 시크릿 = read:packages PAT)
+		//  - 로컬: ~/.gradle/gradle.properties 의 gpr.user / gpr.key
+		maven {
+			url = uri('https://maven.pkg.github.com/KDT-Team26/groovy-common')
+			credentials {
+				username = System.getenv('GITHUB_ACTOR') ?: findProperty('gpr.user')
+				password = System.getenv('GPR_TOKEN') ?: findProperty('gpr.key')
+			}
+		}
 	}
 }

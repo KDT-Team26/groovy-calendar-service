@@ -10,6 +10,7 @@ on:
   pull_request:
     branches:
       - dev
+      - main
 
 permissions:
   contents: read
@@ -32,4 +33,7 @@ jobs:
           java-version: '21'
 
       - name: Run study-service client contract tests
-        run: ./gradlew test --tests "*ContractTest" --no-daemon
+        run: ./gradlew test --tests "*ContractTest" --tests "*TracePropagationTest" --no-daemon
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GPR_TOKEN: ${{ secrets.GPR_TOKEN }}
