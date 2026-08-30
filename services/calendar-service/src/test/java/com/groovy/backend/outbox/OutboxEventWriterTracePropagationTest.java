@@ -1,4 +1,4 @@
-package com.groovy.backend.calendar.outbox;
+package com.groovy.backend.outbox;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -17,7 +17,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.groovy.backend.calendar.config.TracingConfig;
+import com.groovy.backend.observability.TracingConfig;
 
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
