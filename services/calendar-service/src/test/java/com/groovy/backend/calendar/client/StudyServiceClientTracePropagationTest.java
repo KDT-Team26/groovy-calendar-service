@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.web.client.RestClient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.groovy.backend.calendar.config.TracingConfig;
+import com.groovy.backend.observability.TracingConfig;
 import com.sun.net.httpserver.HttpServer;
 
 /**

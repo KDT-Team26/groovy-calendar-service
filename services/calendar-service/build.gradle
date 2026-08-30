@@ -52,11 +52,13 @@ dependencies {
 	implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 
-	implementation project(':libs:event-contract')
-	implementation project(':libs:observability')
-	implementation project(':libs:web-common')
-	implementation project(':libs:security-common')
-	implementation project(':libs:client-common')
+	// 공통 모듈 (groovy-common, GitHub Packages)
+	implementation 'com.groovy.backend:event-contract:0.1.0'
+	implementation 'com.groovy.backend:observability:0.1.0'
+	implementation 'com.groovy.backend:web-common:0.1.0'
+	implementation 'com.groovy.backend:security-common:0.1.0'
+	implementation 'com.groovy.backend:client-common:0.1.0'
+	implementation 'com.groovy.backend:outbox:0.1.0'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
