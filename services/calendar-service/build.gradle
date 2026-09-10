@@ -53,12 +53,12 @@ dependencies {
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 
 	// 공통 모듈 (groovy-common, GitHub Packages)
-	implementation 'com.groovy.backend:event-contract:0.2.0'
-	implementation 'com.groovy.backend:observability:0.2.0'
-	implementation 'com.groovy.backend:web-common:0.2.0'
-	implementation 'com.groovy.backend:security-common:0.2.0'
-	implementation 'com.groovy.backend:client-common:0.2.0'
-	implementation 'com.groovy.backend:outbox:0.2.0'
+	implementation 'com.groovy.backend:event-contract:0.2.1'
+	implementation 'com.groovy.backend:observability:0.2.1'
+	implementation 'com.groovy.backend:web-common:0.2.1'
+	implementation 'com.groovy.backend:security-common:0.2.1'
+	implementation 'com.groovy.backend:client-common:0.2.1'
+	implementation 'com.groovy.backend:outbox:0.2.1'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
